@@ -73,7 +73,7 @@ class Posts extends Controller {
 
             }
         }
-
+    
         public function edit($id){
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
             //Sanitize POST array
@@ -111,28 +111,34 @@ class Posts extends Controller {
         } else {
         //load view with errors
         $this->view('posts/edit', $data);
-
         }
-            } else {
-        //get existing post from model
-                $post = $this->postModel->getPostById($id);
-        //check for owner
 
-        if($post->user_id != $_SESSION['user_id]']){
-            redirect('posts');
+        } else {
+            //get existing post from model
+            $post = $this->postModel->getPostById($id);
 
-        }
+            //check for owner
+            if($post->user_id != $_SESSION['user_id']) {
+                redirect('posts');
+
+            
+        
+            }
                 $data = [
                 'id' => $id,
                 'title' => $post->title,
-                'body' => $post->body
+                'body' => $post->body,
         ];
         
         $this->view('posts/edit', $data);
 
 
-            }
+            
+
+    }
         }
+
+        
         
         public function show($id){
             $post = $this->postModel->getPostById($id);
@@ -144,4 +150,18 @@ class Posts extends Controller {
 
             $this->view('posts/show', $data);
         }
-} 
+
+        public function delete($id) {
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            if($this->postModel->deletePost($id)){
+                flash('post_message', 'Post Deleted');
+                redirect('posts');
+            } else{
+                die('Something went wrong');
+            }
+            } else{
+                redirect('posts');
+            }
+            }
+
+        }
